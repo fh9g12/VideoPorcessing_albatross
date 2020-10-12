@@ -5,6 +5,7 @@ import sys
 import argparse
 import matplotlib.pyplot as plt
 import torch
+from image_ultilites import selectROIResized,undistort_image
 
 def cropImage(img,bb):
     return img[bb[1]:bb[1]+bb[3],bb[0]:bb[0]+bb[2]]
@@ -30,22 +31,9 @@ print('Loading Video')
 # Select ROI to perform analysis in
 cap = cv2.VideoCapture(args['video'])
 ret,frame = cap.read()
-width  = frame.shape[1]
-height = frame.shape[0]
-
-distCoeff[0,0] = k1
-distCoeff[1,0] = k2
-distCoeff[2,0] = p1
-distCoeff[3,0] = p2
-
-cam[0,2] = width/2.0  # define center x
-cam[1,2] = height/2.0 # define center y
-cam[0,0] = 1150        # define focal length x
-cam[1,1] = 1150       # define focal length y
-
-#frame = cv2.undistort(frame,cam,distCoeff)
-ROIs = cv2.selectROIs('Select ROIs', frame, False)
-frameROI = ROIs[0].copy()
+# frame = undistort_image(frame,1150,(k1,k2,p1,p2))
+ROI = selectROIResized('Select ROI',frame,800)
+frameROI = ROI
 
 while True:
     key = cv2.waitKey(10) & 0xFF
