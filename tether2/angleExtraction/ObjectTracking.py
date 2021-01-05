@@ -78,11 +78,11 @@ args = vars(ap.parse_args())
 OPENCV_OBJECT_TRACKERS = {
     "csrt": cv2.TrackerCSRT_create,
     "kcf": cv2.TrackerKCF_create,
-    "boosting": cv2.TrackerBoosting_create,
+    #"boosting": cv2.TrackerBoosting_create,
     "mil": cv2.TrackerMIL_create,
-    "tld": cv2.TrackerTLD_create,
-    "medianflow": cv2.TrackerMedianFlow_create,
-    "mosse": cv2.TrackerMOSSE_create,
+    #"tld": cv2.TrackerTLD_create,
+    #"medianflow": cv2.TrackerMedianFlow_create,
+    #"mosse": cv2.TrackerMOSSE_create,
 }
 
 # load the calibration file
@@ -112,6 +112,7 @@ res = []
 cap.set(cv2.CAP_PROP_POS_FRAMES, args['start_frame'])
 tracking_setup = False
 pause = True
+trackers = []
 i = args['start_frame']
 pbar = tqdm(total=int(frame_count - args['start_frame']-1))
 while i < int(frame_count)-1:
@@ -127,7 +128,7 @@ while i < int(frame_count)-1:
         pause = not pause
 
     if not tracking_setup:
-        trackers = cv2.MultiTracker_create()
+        trackers = []
         points = select_points(roi)
 
         #create ROIs
@@ -138,15 +139,17 @@ while i < int(frame_count)-1:
         print(ROIs)
         for ROI in ROIs:
             tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]]()
-            trackers.add(tracker, roi, tuple(ROI))
+            tracker.init(roi,ROI)
+            trackers.append(tracker)
+            #trackers.add(tracker, roi, tuple(ROI))
         tracking_setup = True
         tracking = True
         pause = False
 
     if (tracking and not pause) or (pause and key == ord("s")):
-        ( tracking, boxes) = trackers.update(roi)
+        (tracking,boxes) = zip(*(t.update(roi) for t in trackers ))
         res_dict = {"Frame":i,"fps":fps,"Side":side}
-        if tracking:
+        if any(tracking):
             for j,box in enumerate(boxes):
                 roi = drawBox(roi,box)     
                 res_dict = {**res_dict,**getBoxCentreInfo(box,j)}
