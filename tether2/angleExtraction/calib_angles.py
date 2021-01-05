@@ -76,7 +76,7 @@ for f in args["frames"]:
             tmp_frame[p[1],p[0]] = [0,0,255]     
         cv2.imshow('frame',tmp_frame)
     deltas = [x[0]-x[1] for x in (zip(*points))]
-    actual_angles.append(np.rad2deg(np.arctan2(*deltas[::-1])))
+    actual_angles.append(np.rad2deg(np.arctan(abs(deltas[1])/-deltas[0])))
     points = []
 print(actual_angles)
 print(calib_angles)
