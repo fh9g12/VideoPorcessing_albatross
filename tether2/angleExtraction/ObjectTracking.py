@@ -112,18 +112,19 @@ res = []
 cap.set(cv2.CAP_PROP_POS_FRAMES, args['start_frame'])
 tracking_setup = False
 pause = True
+tracking = False
 trackers = []
 i = args['start_frame']
 pbar = tqdm(total=int(frame_count - args['start_frame']-1))
+cv2.namedWindow("img",cv2.WINDOW_KEEPRATIO)
 while i < int(frame_count)-1:
-    if i % 10 == 0:
-        print()
     skip = False
     key = cv2.waitKey(10) & 0xFF
-    if key == ord("c"):
+    if key == ord("f"):
         break
     if key == ord("t"):
         tracking_setup = False
+        tracking = False
     if key == ord(" "):
         pause = not pause
 
@@ -136,20 +137,20 @@ while i < int(frame_count)-1:
         ROIs = [[xc-w/2,yc-w/2,w,w] for xc,yc in points]
 
         # ROIs = cv2.selectROIs('Select Objects to track', roi, False)
-        print(ROIs)
+        #print(ROIs)
         for ROI in ROIs:
             tracker = OPENCV_OBJECT_TRACKERS[args["tracker"]]()
             tracker.init(roi,ROI)
             trackers.append(tracker)
-            #trackers.add(tracker, roi, tuple(ROI))
         tracking_setup = True
-        tracking = True
         pause = False
+        tracking = True
 
     if (tracking and not pause) or (pause and key == ord("s")):
-        (tracking,boxes) = zip(*(t.update(roi) for t in trackers ))
+        (tracking_successful,boxes) = zip(*(t.update(roi) for t in trackers ))
         res_dict = {"Frame":i,"fps":fps,"Side":side}
-        if any(tracking):
+        tracking = all(tracking_successful)
+        if tracking:
             for j,box in enumerate(boxes):
                 roi = drawBox(roi,box)     
                 res_dict = {**res_dict,**getBoxCentreInfo(box,j)}

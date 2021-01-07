@@ -62,7 +62,7 @@ for f in args["frames"]:
     grayColor = cv2.cvtColor(undist, cv2.COLOR_BGR2GRAY)
 
     # select the grid points
-    cv2.namedWindow("frame")
+    cv2.namedWindow("frame",cv2.WINDOW_KEEPRATIO)
     cv2.setMouseCallback("frame", mouse_click)
     while True:
         key = cv2.waitKey(1) & 0xFF

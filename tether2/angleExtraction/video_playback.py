@@ -54,8 +54,8 @@ frame_pos = args['start_frame']
 pause = True
 rate = 1
 
-cv2.namedWindow("frame")
-cv2.setMouseCallback("frame", mouse_click)
+cv2.namedWindow("frame",cv2.WINDOW_GUI_EXPANDED)
+#cv2.setMouseCallback("frame", mouse_click)
 
 while frame_pos < frame_count:
     key = cv2.waitKey(1) & 0xFF
@@ -65,7 +65,7 @@ while frame_pos < frame_count:
         if pause:
             ret,frame = cap.read()
             frame_pos += 1
-    if key == ord("c"):
+    if key == ord("f"):
         break
     if key == ord("1"):
         rate = 1
