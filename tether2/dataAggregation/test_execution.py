@@ -2,26 +2,141 @@ import pytest
 from correct_time_cols import correct_time
 from add_fwt_angels import add_fwt_angles
 
+
+
+
+
 # --------------------------  DFDR Time Correction ----------------------------------
-@pytest.mark.parametrize("test_num",[1,2,3,4,5,6,7,8,9,10,11,12,13,14])
-def test_all_fix_times(test_num):
-    excel_file = f"/Volumes/Windows Dat/TETHER2/TETHER2_DFDRs/DFDR_Test{test_num:02d}_v1.xlsx"
-    worksheet = "DFDR"
-    output_file = f"/Volumes/Windows Dat/TETHER2/TETHER2_DFDRs/DFDR_Test{test_num:02d}_v2.xlsx"
-    correct_time(excel_file,worksheet,output_file)
-    assert True
+# @pytest.mark.parametrize("test_num",[1,2,3,4,5,6,7,8,9,10,11,12,13,14])
+# def test_all_fix_times(test_num):
+#     excel_file = f"/Volumes/Windows Dat/TETHER2/TETHER2_DFDRs/DFDR_Test{test_num:02d}_v1.xlsx"
+#     worksheet = "DFDR"
+#     output_file = f"/Volumes/Windows Dat/TETHER2/TETHER2_DFDRs/DFDR_Test{test_num:02d}_v2.xlsx"
+#     correct_time(excel_file,worksheet,output_file)
+#     assert True
 
 
 # --------------------------  DFDR Add FWT angles ----------------------------------
-def test_load_test_3_angles():
-    test_num = 3
-    excel_file = f"/Volumes/Windows Dat/TETHER2/TETHER2_DFDRs/DFDR_Test{test_num:02d}_v2.xlsx"
-    worksheet = "DFDR"
-    output_file = f"/Volumes/Windows Dat/TETHER2/TETHER2_DFDRs/DFDR_Test{test_num:02d}_v3.xlsx"
-    left_angle_data = "/Volumes/Windows Dat/TETHER2/TETHER2_2A.1/VID/tail/first_part/RC_VID_0000_left_data.csv"
-    right_angle_data = "/Volumes/Windows Dat/TETHER2/TETHER2_2A.1/VID/tail/first_part/RC_VID_0000_right_data.csv"
-    left_angle_calib = "/Volumes/Windows Dat/TETHER2/TETHER2_2A.1/VID/tail/first_part/RC_VID_0000_left_calib.pkl"
-    right_angle_calib = "/Volumes/Windows Dat/TETHER2/TETHER2_2A.1/VID/tail/first_part/RC_VID_0000_right_calib.pkl"
-    add_fwt_angles(excel_file,worksheet,left_angle_data,left_angle_calib,-19.28,False,output_file)
-    add_fwt_angles(excel_file,worksheet,right_angle_data,right_angle_calib,-19.28,True,output_file)
+def c_file_gen(test,vid_num,is_right,folder):
+    return f"{folder}/Test {test}/RC_VID_{vid_num:04d}_{'right' if is_right else 'left'}_calib.pkl"
+
+def d_file_gen(test,vid_num,is_right,folder):
+    return f"{folder}/Test {test}/RC_VID_{vid_num:04d}_{'right' if is_right else 'left'}_data.csv"
+
+def e_file_gen(test,folder):
+    return f"{folder}/TETHER2_DFDRs/With Fold Angles/DFDR_Test{test:02d}_v2.xlsx"
+
+def add_both_angles(e_file,d_test,d_vid,c_test,c_vid,folder,time_delta):
+    for lr in [False,True]:
+        add_fwt_angles(e_file,
+                    d_file_gen(d_test,d_vid,lr,folder),
+                    c_file_gen(c_test,c_vid,lr,folder),
+                    'DFDR',time_delta,lr,e_file)
+def test_1_vid_1():
+    time_delta = 398.27
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(1,folder)
+    print(e_file)
+    add_both_angles(e_file,
+                d_test=1,d_vid=5,
+                c_test=1,c_vid=5,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_1_vid_2():
+    time_delta = 1419.56
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(1,folder)
+    add_both_angles(e_file,
+                d_test=1,d_vid=6,
+                c_test=1,c_vid=5,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_2_vid_1():
+    time_delta = 23.38
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(2,folder)
+    add_both_angles(e_file,
+                d_test=2,d_vid=0,
+                c_test=1,c_vid=5,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_3_vid_1():
+    time_delta = -19.34
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(3,folder)
+    add_both_angles(e_file,
+                d_test=3,d_vid=0,
+                c_test=3,c_vid=0,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_3_vid_2():
+    time_delta = 1002.26
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(3,folder)
+    add_both_angles(e_file,
+                d_test=3,d_vid=1,
+                c_test=3,c_vid=0,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_4_vid_1():
+    time_delta = -4.17
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(4,folder)
+    add_both_angles(e_file,
+                d_test=4,d_vid=2,
+                c_test=3,c_vid=0,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_5_vid_1():
+    time_delta = -9.85
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(5,folder)
+    add_both_angles(e_file,
+                d_test=5,d_vid=3,
+                c_test=3,c_vid=0,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_6_vid_1():
+    time_delta = 1019.54
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(6,folder)
+    add_both_angles(e_file,
+                d_test=6,d_vid=5,
+                c_test=6,c_vid=4,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_10_vid_1():
+    time_delta = -76.97
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(10,folder)
+    add_both_angles(e_file,
+                d_test=10,d_vid=14,
+                c_test=10,c_vid=14,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_10_vid_2():
+    time_delta = 944.44
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(10,folder)
+    add_both_angles(e_file,
+                d_test=10,d_vid=15,
+                c_test=10,c_vid=14,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_13_vid_1():
+    time_delta = -20.08
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(13,folder)
+    add_both_angles(e_file,
+                d_test=13,d_vid=19,
+                c_test=13,c_vid=19,folder=folder,time_delta=time_delta)
+    assert True
+
+def test_13_vid_2():
+    time_delta = 1001.23
+    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
+    e_file = e_file_gen(13,folder)
+    add_both_angles(e_file,
+                d_test=13,d_vid=20,
+                c_test=13,c_vid=19,folder=folder,time_delta=time_delta)
     assert True

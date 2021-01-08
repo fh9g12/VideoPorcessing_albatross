@@ -8,11 +8,11 @@ from openpyxl import load_workbook
 from scipy.interpolate import griddata,interp1d
 import pickle
 
-def add_fwt_angles(excel_filename,worksheet,angle_data_filename,angle_calib_filename,time_offset=0,is_right=True,output_file = None):
+def add_fwt_angles(excel_filename,angle_data_filename,angle_calib_filename,worksheet='DFDR',time_offset=0,is_right=True,output_file = None):
     print('Loading Excel File')
     excel_file = open(excel_filename,'rb')
-    data = pd.read_excel(excel_file,sheet_name = 'DFDR',
-                  header=None,skiprows=3)
+    data = pd.read_excel(excel_file,sheet_name = worksheet,
+                  header=None,skiprows=3,  engine='openpyxl')
     df = get_angle_data(angle_data_filename,is_right)
 
     print('Loading calibration')
@@ -26,10 +26,11 @@ def add_fwt_angles(excel_filename,worksheet,angle_data_filename,angle_calib_file
 
     # ----------------------- Save to an excel file --------------------------------
     col_index = 45 if is_right else 44
-    ind = np.logical_and((data[2] + time_offset) >= min(df['t'] + time_offset),(data[2] + time_offset) <= max(df['t'] + time_offset))
+    ind = np.logical_and(data[2] >= min(df['t'] + time_offset),data[2] <= max(df['t'] + time_offset))
     wb = load_workbook(excel_file)
     ws = wb[worksheet]
-    for i,val in enumerate(data.loc[ind,2].to_list()):
+    vals = data.loc[ind,2]
+    for i,val in zip(vals.index,vals):
         ws.cell(row = 4 + i,column = col_index).value = f_angle([val])[0]
 
     output_file = excel_file if output_file is None else output_file
@@ -48,4 +49,16 @@ def get_angle_data(filename,flip=False):
     df2['y_delta'] = df2['y_delta'].where((df2['x0']>df2['x1']).to_list(),df2['y1']-df2['y0'])
     df2['angle'] = np.rad2deg(np.arctan2(df2['y_delta'],df2['x_delta']))
     df2['angle'] = df2['angle'] if not flip else -df2['angle']
+    df2['target_sep'] = np.sqrt(df2['x_delta']**2 + df2['y_delta']**2)
     return df2
+
+if __name__ == "__main__":
+    ap = argparse.ArgumentParser(description=__doc__,
+                            formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("-e", "--excelfile", required = True, help = "dfdr excel file")
+    ap.add_argument("-s", "--sheetname", default="DFDR", help = "Excel Sheet name")
+    ap.add_argument("-c","--calib",required = True, help="calib file")
+    ap.add_argument("-d", "--data", type=float, nargs="+", help="fold angle csv filename")
+    ap.add_argument("-c","--calib_file", required=True, help="camera calibration file")
+    ap.add_argument("-o","--output_file",help="Output file location")
+    args = vars(ap.parse_args())
