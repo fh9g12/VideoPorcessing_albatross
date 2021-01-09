@@ -42,8 +42,8 @@ def add_fwt_angles(excel_filename,worksheet,angle_data_filename,angle_calib_file
 def get_angle_data(filename,flip=False):
     df2 = pd.read_csv(filename)
     df2['t'] = df2['Frame']/df2['fps']
-    df2['x_delta'] = df2['x0'] - df2['x1']
-    df2['y_delta'] = df2['y0'] - df2['y1']
+    df2['x_delta'] = df2['x1'] - df2['x0']
+    df2['y_delta'] = df2['y1'] - df2['y0']
     df2['x_delta'] = df2['x_delta'].where((df2['x0']>df2['x1']).to_list(),df2['x1']-df2['x0'])
     df2['y_delta'] = df2['y_delta'].where((df2['x0']>df2['x1']).to_list(),df2['y1']-df2['y0'])
     df2['angle'] = np.rad2deg(np.arctan2(df2['y_delta'],df2['x_delta']))

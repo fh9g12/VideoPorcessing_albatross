@@ -59,6 +59,16 @@ for f in args["frames"]:
         raise ValueError("could not successful retrieve video frame")
     frame = crop_image(frame,calib["roi"])
     undist = cv2.undistort(frame.copy(), mtx, dist, None, mtx)
+
+    # upscale the image to make it easier to select the centre
+    scale_percent = 600 # percent of original size
+    width = int(undist.shape[1] * scale_percent / 100)
+    height = int(undist.shape[0] * scale_percent / 100)
+    dim = (width, height)
+    
+    # resize image
+    undist = cv2.resize(undist, dim, interpolation = cv2.INTER_AREA)
+
     grayColor = cv2.cvtColor(undist, cv2.COLOR_BGR2GRAY)
 
     # select the grid points
@@ -73,10 +83,15 @@ for f in args["frames"]:
                 points.pop()
         tmp_frame = undist.copy()    
         for p in points:
-            tmp_frame[p[1],p[0]] = [0,0,255]     
+            tmp_frame[p[1],p[0]] = [0,0,255]
+            tmp_frame[p[1]-1,p[0]] = [0,0,255]
+            tmp_frame[p[1]-1,p[0]-1] = [0,0,255]    
+            tmp_frame[p[1],p[0]-1] = [0,0,255]
+        cv2.putText(tmp_frame,f"{len(points)}",(200,200),cv2.FONT_HERSHEY_SIMPLEX,5,(0,255,0,2))        
         cv2.imshow('frame',tmp_frame)
-    deltas = [x[0]-x[1] for x in (zip(*points))]
-    actual_angles.append(np.rad2deg(np.arctan(abs(deltas[1])/-deltas[0])))
+
+    deltas = [x[1]-x[0] for x in (zip(*points))]
+    actual_angles.append(np.rad2deg(np.arctan2(deltas[1],deltas[0])))
     points = []
 print(actual_angles)
 print(calib_angles)
