@@ -47,8 +47,8 @@ def get_angle_data(filename,flip=False):
     df2['y_delta'] = df2['y1'] - df2['y0']
     df2['x_delta'] = df2['x_delta'].where((df2['x0']>df2['x1']).to_list(),df2['x1']-df2['x0'])
     df2['y_delta'] = df2['y_delta'].where((df2['x0']>df2['x1']).to_list(),df2['y1']-df2['y0'])
-    df2['angle'] = np.rad2deg(np.arctan2(df2['y_delta'],df2['x_delta']))
-    df2['angle'] = df2['angle'] if not flip else -df2['angle']
+    df2['angle'] = np.rad2deg(np.arctan2(df2['y_delta'],abs(df2['x_delta'])))
+    # df2['angle'] = df2['angle'] if not flip else -df2['angle']
     df2['target_sep'] = np.sqrt(df2['x_delta']**2 + df2['y_delta']**2)
     return df2
 

@@ -94,7 +94,7 @@ all_args.append(args.copy())
 
 # %%
 arg_list = []
-for key,val in all_args[-3].items():
+for key,val in all_args[1].items():
     arg_list.append(key)
     if isinstance(val,str):
         arg_list.append(val)

@@ -42,15 +42,6 @@ def test_1_vid_1():
                 c_test=1,c_vid=5,folder=folder,time_delta=time_delta)
     assert True
 
-def test_1_vid_2():
-    time_delta = 1419.56
-    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
-    e_file = e_file_gen(1,folder)
-    add_both_angles(e_file,
-                d_test=1,d_vid=6,
-                c_test=1,c_vid=5,folder=folder,time_delta=time_delta)
-    assert True
-
 def test_2_vid_1():
     time_delta = 23.38
     folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
@@ -66,15 +57,6 @@ def test_3_vid_1():
     e_file = e_file_gen(3,folder)
     add_both_angles(e_file,
                 d_test=3,d_vid=0,
-                c_test=3,c_vid=0,folder=folder,time_delta=time_delta)
-    assert True
-
-def test_3_vid_2():
-    time_delta = 1002.26
-    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
-    e_file = e_file_gen(3,folder)
-    add_both_angles(e_file,
-                d_test=3,d_vid=1,
                 c_test=3,c_vid=0,folder=folder,time_delta=time_delta)
     assert True
 
@@ -114,29 +96,11 @@ def test_10_vid_1():
                 c_test=10,c_vid=14,folder=folder,time_delta=time_delta)
     assert True
 
-def test_10_vid_2():
-    time_delta = 944.44
-    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
-    e_file = e_file_gen(10,folder)
-    add_both_angles(e_file,
-                d_test=10,d_vid=15,
-                c_test=10,c_vid=14,folder=folder,time_delta=time_delta)
-    assert True
-
 def test_13_vid_1():
     time_delta = -20.08
     folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
     e_file = e_file_gen(13,folder)
     add_both_angles(e_file,
                 d_test=13,d_vid=19,
-                c_test=13,c_vid=19,folder=folder,time_delta=time_delta)
-    assert True
-
-def test_13_vid_2():
-    time_delta = 1001.23
-    folder = "/Users/fintan/OneDrive - University of Bristol/Tether2"
-    e_file = e_file_gen(13,folder)
-    add_both_angles(e_file,
-                d_test=13,d_vid=20,
                 c_test=13,c_vid=19,folder=folder,time_delta=time_delta)
     assert True
